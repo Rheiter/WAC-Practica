@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <body>
+	<input id="input"></input>
+	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+	<script>
+		  $("#input").keyup(function() {
+			  window.localStorage.setItem("val", $(this).val());
+			  console.log(localStorage.getItem("val"));
+		  });
+	</script>
+  </body>
+</html>

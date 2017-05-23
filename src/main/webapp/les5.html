@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="weather.css">
+</head>
+<body>
+	<div id="frame">
+		<div id="myLocation">
+			<h3>Mijn locatie</h3>
+			<label class="myLocationLabel">Landcode:</label>
+			<label class="myLocationValue" id="myCode"></label>
+			<label class="myLocationLabel">Land:</label>
+			<label class="myLocationValue" id="myCountry"></label>
+			<label class="myLocationLabel">Provincie:</label>
+			<label class="myLocationValue" id="myRegion"></label>
+			<label class="myLocationLabel">Stad:</label>
+			<label class="myLocationValue" id="myCity"></label>
+			<label class="myLocationLabel">Postcode:</label>
+			<label class="myLocationValue" id="myZip"></label>
+			<label class="myLocationLabel">Latitude:</label>
+			<label class="myLocationValue" id="myLat"></label>
+			<label class="myLocationLabel">Longitude:</label>
+			<label class="myLocationValue" id="myLon"></label>
+			<label class="myLocationLabel">IP:</label>
+			<label class="myLocationValue" id="myIP"></label>
+		</div>
+		
+		<div id="weatherInfo">
+			<h3 id="weatherHeader"></h3>
+			<label class="weatherLabel">Temperatuur:</label>
+			<label class="weatherValue" id="temperature"></label>
+			<label class="weatherLabel">Luchtvochtigheid:</label>
+			<label class="weatherValue" id="humidity"></label>
+			<label class="weatherLabel">Windsnelheid:</label>
+			<label class="weatherValue" id="windspeed"></label>
+			<label class="weatherLabel">Windrichting:</label>
+			<label class="weatherValue" id="windDirection"></label>
+			<label class="weatherLabel">Zonsopkomst:</label>
+			<label class="weatherValue" id="sunrise"></label>
+			<label class="weatherLabel">Zonsondergang:</label>
+			<label class="weatherValue" id="sunset"></label>
+		</div>
+		
+		<div id="countryList">
+			<h3>Beschikbare vakantiebestemmingen</h3>
+			<table id="countryTable">
+				<tr>
+					<th>Land</th>
+					<th>Hoofdstad</th>
+					<th>Regio</th>
+					<th>Oppervlakte</th>
+					<th>Inwoners</th>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+	<script type="text/javascript">
+		function initPage() {
+			$.getJSON("http://ip-api.com/json/", function(data) {
+				$("#myCode").text(data.countryCode);
+				$("#myCountry").text(data.country);
+				$("#myRegion").text(data.regionName);
+				$("#myCity").text(data.city);
+				$("#myZip").text(data.zip);
+				$("#myLat").text(data.lat);
+				$("#myLon").text(data.lon);
+				$("#myIP").text(data.query);
+				showWeather(data.lat, data.lon, data.city);
+			});
+			loadCountries();
+		}
+		
+		function showWeather(latitude, longitude, city) {
+			$("#weatherHeader").text("Het weer in " + city);
+			$.getJSON("http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&APPID=369d61eb37e92277b54b829760bbc9ab",
+					function(data) {
+				$("#temperature").text((data.main.temp - 272.15).toFixed(1) + " °C");
+				$("#humidity").text(data.main.humidity + "%");
+				$("#windspeed").text((data.wind.speed * 3.6).toFixed(1) + " km/u");
+				$("#windDirection").text(degToDirection(data.wind.deg));
+				$("#sunrise").text(msecsToTime(data.sys.sunrise));
+				$("#sunset").text(msecsToTime(data.sys.sunset));
+			});
+		}
+		
+		function loadCountries() {
+			$.get("restservices/countries", function(data) {
+				$.each(data, function(i, country) {
+					$("#countryTable").append(
+							"<tr class='country' lat='" + country.lat + "' lon='" + country.lng +"' capital='" + country.capital + "'>" +
+								"<td>" + country.name + "</td>" +
+								"<td>" + country.capital + "</td>" +
+								"<td>" + country.region + "</td>" +
+								"<td>" + country.surface + "</td>" +
+								"<td>" + country.population + "</td>" +
+							"</tr>");
+				});
+				$("tr.country").click(function() {
+					var city = $(this).attr("capital");
+					var lat = $(this).attr("lat");
+					var lon = $(this).attr("lon");
+					showWeather(lat, lon, city);
+				})
+			});
+		}
+		
+		function msecsToTime(msecs) {
+			var date = new Date(msecs);
+			var hrs = ("0" + date.getHours()).slice(-2);
+			var mins = ("0" + date.getMinutes()).slice(-2);
+			var secs = ("0" + date.getSeconds()).slice(-2);
+			return(hrs+ ":" + mins + ":" + secs);
+		}
+		
+		function degToDirection(deg) {
+		    var val = parseInt(deg / 45)
+			var directions = ["Noord","Noordoost","Oost","Zuidoost",
+				"Zuid","Zuidwest", "West", "Noordwest"];
+		    return (directions[val % 8]);
+		}
+		$(function() {
+			initPage();
+		});
+		
+		$("#myCity").click(function () {
+			var lat = $("#myLat").text();
+			var lon = $("#myLon").text();
+			var city = $("#myCity").text();
+			showWeather(lat, lon, city);
+		});
+	</script>
+</body>
+</html>

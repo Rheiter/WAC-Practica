@@ -1,0 +1,46 @@
+body {
+	background-color: lightskyblue;
+}
+
+h3 {
+	background-color: lightseagreen;
+	clear: left;
+}
+
+th {
+	width: 150px;
+	text-align: left;
+}
+
+.myLocationLabel {
+	width: 100px;
+	float: left;
+	clear: left;
+}
+
+.myLocationValue {
+	float: left;
+}
+
+.weatherLabel {
+	width: 150px;
+	float: left;
+	clear: left;
+}
+
+.weatherValue {
+	float: left;
+}
+
+#countryTable {
+	background-color: lightseagreen;
+}
+
+.country:HOVER, #myCity:HOVER {
+	background-color: white;
+}
+
+.tableDiv {
+	overflow-x: auto;
+	overflow-y: auto;
+}

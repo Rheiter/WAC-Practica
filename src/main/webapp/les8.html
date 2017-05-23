@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="les8.css">
+	<link rel="stylesheet" media="only screen and (min-width: 820px)" href="les8wide.css">
+</head>
+<body>
+	<div id="frame">
+		<div id="searchDiv">
+			<form id="searchForm">
+				<input id="top10Surface" type="button" value="Top 10 surface">
+				<input id="top10Population" type="button" value="Top 10 population">
+				<input id="searchField" type="text" placeholder="Country name or code">
+				<input id="searchButton" type="button" value="Search">
+			</form>
+		</div>
+	
+		<div id="countryList">
+			<h3>Countries</h3>
+			<div id="tableDiv">
+				<table id="countryTable">
+					<tr>
+						<th>Code</th>
+						<th>Country</th>
+						<th>Capital</th>
+						<th>Surface</th>
+						<th>Population</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div id="updateDiv">
+			<form id="updateForm">
+				<h3 id="updateFormHeader"></h3>
+				<div id="updateFields">
+					<label>Name:</label>
+					<input class="updateField" id="updateName" type="text" name="updateName">
+					<label>Iso 2 code:</label>
+					<input class="updateField" id="updateIso2" type="text" name="updateIso2">
+					<label>Capital:</label>
+					<input class="updateField" id="updateCapital" type="text" name="updateCapital">
+					<label>Continent:</label>
+					<input class="updateField" id="updateContinent" type="text" name="updateContinent">
+					<label>Region:</label>
+					<input class="updateField" id="updateRegion" type="text" name="updateRegion" value="Region">
+					<label>Surface area:</label>
+					<input class="updateField" id="updateSurface" type="number" name="updateSurface">
+					<label>Population:</label>
+					<input class="updateField" id="updatePopulation" type="number" name="updatePopulation">
+					<label>Government form:</label>
+					<input class="updateField" id="updateGovernment" type="text" name="updateGovernment">
+					<label>Latitude:</label>
+					<input class="updateField" id="updateLatitude" type="number" name="updateLatitude">
+					<label>Longitude:</label>
+					<input class="updateField" id="updateLongitude" type="number" name="updateLongitude">
+					<input class="updateField" id="updateSubmit" type="button" name="update" value="Update">
+				</div>
+				<h3 id="deleteHeader"></h3>
+				<input class="updateField" id="delete" type="button" name="delete" value="Delete">
+			</form>
+		</div>
+		
+		<div id="insertDiv">
+			<form id="insertForm">
+				<h3>Add new country</h3>
+				<div id="insertFields">
+					<input class="insertField" id="insertIso3" type="text" name="insertIso3" placeholder="Iso3Code">
+					<input class="insertField" id="insertName" type="text" name="insertName" placeholder="Name">
+					<input class="insertField" id="insertIso2" type="text" name="insertIso2" placeholder="Iso2Code">
+					<input class="insertField" id="insertCapital" type="text" name="insertCapital" placeholder="Capital">
+					<input class="insertField" id="insertContinent" type="text" name="insertContinent" placeholder="Continent">
+					<input class="insertField" id="insertRegion" type="text" name="insertRegion" placeholder="Region">
+					<input class="insertField" id="insertSurface" type="number" name="insertSurface" placeholder="Surface area">
+					<input class="insertField" id="insertPopulation" type="number" name="insertPopulation" placeholder="Population">
+					<input class="insertField" id="insertGovernment" type="text" name="insertGovernment" placeholder="Government form">
+					<input class="insertField" id="insertLatitude" type="number" name="insertLatitude" placeholder="Latitude">
+					<input class="insertField" id="insertLongitude" type="number" name="insertLongitude" placeholder="Longitude">
+					<input class="insertField" id="insertSubmit" type="button" name="insert" value="Save">
+				</div>
+			</form>
+		</div>
+		
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+	<script>
+	function loadCountries() {
+		$.get("restservices/countries", function(data) {
+			$.each(data, function(i, country) {
+				$("#countryTable").append(
+						"<tr class='countryRow'>" +
+							"<td>" + country.iso3 + "</td>" +
+							"<td>" + country.name + "</td>" +
+							"<td>" + country.capital + "</td>" + 
+							"<td>" + country.surface + "</td>" +
+							"<td>" + country.population + "</td>" +
+						"</tr>");
+			});
+		});
+	}
+	
+	$("#countryTable").on("click", ".countryRow",function(target) {
+		iso3 = target.currentTarget.cells[0].innerHTML;
+		$("#updateFormHeader").text("Update information for "
+				+ target.currentTarget.cells[1].innerHTML);
+		$("#deleteHeader").text("Or delete "
+				+ target.currentTarget.cells[1].innerHTML);
+		$("#updateDiv").show();
+		$.get("restservices/countries/" + target.currentTarget.cells[0].innerHTML,
+				function(data) {
+			$("#updateName").attr("value", data.name);
+			$("#updateIso2").attr("value", data.iso2);
+			$("#updateCapital").attr("value", data.capital);
+			$("#updateContinent").attr("value", data.continent);
+			$("#updateRegion").attr("value", data.region);
+			$("#updatePopulation").attr("value", data.population);
+			$("#updateSurface").attr("value", data.surface);
+			$("#updateGovernment").attr("value", data.government);
+			$("#updateLatitude").attr("value", data.lat);
+			$("#updateLongitude").attr("value", data.lng);
+		});
+	});
+	
+	$("#updateSubmit").click(function() {
+		var uri = "restservices/countries/" + iso3;
+		$.ajax(uri, {
+			type: "put",
+			data: $("#updateForm").serialize(),
+			success: function(response) {
+				console.log("Country updated!");
+			},
+			error: function(response) {
+				console.log("Could not update country!");
+			}
+		});
+		$(".countryRow").remove();
+		loadCountries();
+	});
+	
+	$("#delete").click(function() {
+		var uri = "restservices/countries/" + iso3;
+		$.ajax(uri, {
+			type: "delete",
+			data: $("#updateForm").serialize(),
+			success: function(response) {
+				console.log("Country deleted!");
+			},
+			error: function(response) {
+				console.log("Could not delete country!");
+			}
+		});
+		$(".countryRow").remove();
+		loadCountries();
+	});
+	
+	$("#insertSubmit").click(function() {
+		var uri = "restservices/countries";
+		$.post(uri, $("#insertForm").serialize());
+	});
+	
+	$("#searchButton").click(function() {
+		var uri = "restservices/countries/search/" + $("#searchField").val();
+		$.get(uri, function(data) {
+			$(".countryRow").remove();
+			$.each(data, function(i, country) {
+				$("#countryTable").append(
+						"<tr class='countryRow'>" +
+							"<td>" + country.iso3 + "</td>" +
+							"<td>" + country.name + "</td>" +
+							"<td>" + country.capital + "</td>" +
+							"<td>" + country.surface + "</td>" +
+							"<td>" + country.population + "</td>" +
+						"</tr>");
+			});
+		});
+	});
+	
+	$("#top10Surface").click(function() {
+		var uri = "restservices/countries/largestsurfaces";
+		$.get(uri, function(data) {
+			$(".countryRow").remove();
+			$.each(data, function(i, country) {
+				$("#countryTable").append(
+						"<tr class='countryRow'>" +
+							"<td>" + country.iso3 + "</td>" +
+							"<td>" + country.name + "</td>" +
+							"<td>" + country.capital + "</td>" +
+							"<td>" + country.surface + "</td>" +
+							"<td>" + country.population + "</td>" +
+						"</tr>");
+			});
+		});
+	});
+	
+	$("#top10Population").click(function() {
+		var uri = "restservices/countries/largestpopulations";
+		$.get(uri, function(data) {
+			$(".countryRow").remove();
+			$.each(data, function(i, country) {
+				$("#countryTable").append(
+						"<tr class='countryRow'>" +
+							"<td>" + country.iso3 + "</td>" +
+							"<td>" + country.name + "</td>" +
+							"<td>" + country.capital + "</td>" +
+							"<td>" + country.surface + "</td>" +
+							"<td>" + country.population + "</td>" +
+						"</tr>");
+			});
+		});
+	});
+	
+	$(function() {
+		loadCountries();
+		$("#updateDiv").hide();
+	});
+	</script>
+</body>
+</html>

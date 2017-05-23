@@ -1,0 +1,37 @@
+body {
+	background-color: lightskyblue;
+}
+
+h3 {
+	background-color: lightseagreen;
+}
+
+table {
+	background-color: lightseagreen;
+}
+
+th {
+	text-align: left;
+}
+
+.countryRow:HOVER {
+	background-color: white;
+}
+
+#tableDiv {
+	max-width: 600px;
+	max-height: 500px;
+	overflow-y: auto;
+}
+
+.updateField, .insertField {
+	width: 200px;
+	margin-bottom: 5px;
+	margin-left: 5px
+}
+
+label {
+	margin-left: 5px;
+	width: 150px;
+	float:left;
+}

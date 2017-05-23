@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+	<label></label>
+	<script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+	<script>
+	  window.addEventListener('storage', function(event) {
+		  $("label").text(event.newValue);
+	  });
+	</script>
+  </body>
+</html>
