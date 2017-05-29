@@ -2,6 +2,7 @@ package nl.hu.v1wac.firstapp.webservices;
 
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.json.*;
 import javax.ws.rs.*;
 
@@ -130,6 +131,7 @@ public class WorldResource {
 	}
 	
 	@PUT
+	@RolesAllowed("user")
 	@Path("{updateIso3}")
 	@Produces("application/json")
 	public String update(@PathParam("updateIso3") String iso3,
@@ -156,6 +158,7 @@ public class WorldResource {
 	}
 	
 	@DELETE
+	@RolesAllowed("user")
 	@Path("{updateIso3}")
 	public boolean delete(@PathParam("updateIso3") String iso3,
 							@FormParam("updateName") String name,
@@ -177,6 +180,7 @@ public class WorldResource {
 	}
 	
 	@POST
+	@RolesAllowed("user")
 	@Produces("application/json")
 	public String insert(@FormParam("insertIso3") String iso3,
 							@FormParam("insertName") String name,

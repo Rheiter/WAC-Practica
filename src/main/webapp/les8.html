@@ -6,8 +6,18 @@
 </head>
 <body>
 	<div id="frame">
+	
+		<div id="loginDiv">
+			<form id="loginForm">
+				<input type="text" name="username" placeholder="Username">
+				<input type="text" name="password" placeholder="Password">
+				<input id="loginButton" type="button" value="Log in">
+			</form>
+		</div>
+		
 		<div id="searchDiv">
 			<form id="searchForm">
+				<input id="allCountries" type="button" value="All countries">
 				<input id="top10Surface" type="button" value="Top 10 surface">
 				<input id="top10Population" type="button" value="Top 10 population">
 				<input id="searchField" type="text" placeholder="Country name or code">
@@ -87,6 +97,7 @@
 	<script>
 	function loadCountries() {
 		$.get("restservices/countries", function(data) {
+			$(".countryRow").remove();
 			$.each(data, function(i, country) {
 				$("#countryTable").append(
 						"<tr class='countryRow'>" +
@@ -126,37 +137,57 @@
 		var uri = "restservices/countries/" + iso3;
 		$.ajax(uri, {
 			type: "put",
+			beforeSend: function (xhr) {
+				var token = window.sessionStorage.getItem("sessionToken");
+				xhr.setRequestHeader( 'Authorization', 'Bearer ' + token);
+			},
 			data: $("#updateForm").serialize(),
 			success: function(response) {
+				loadCountries();
 				console.log("Country updated!");
 			},
 			error: function(response) {
 				console.log("Could not update country!");
 			}
 		});
-		$(".countryRow").remove();
-		loadCountries();
 	});
 	
 	$("#delete").click(function() {
 		var uri = "restservices/countries/" + iso3;
 		$.ajax(uri, {
 			type: "delete",
+			beforeSend: function (xhr) {
+				var token = window.sessionStorage.getItem("sessionToken");
+				xhr.setRequestHeader( 'Authorization', 'Bearer ' + token);
+			},
 			data: $("#updateForm").serialize(),
 			success: function(response) {
+				loadCountries();
 				console.log("Country deleted!");
 			},
 			error: function(response) {
 				console.log("Could not delete country!");
 			}
 		});
-		$(".countryRow").remove();
-		loadCountries();
 	});
 	
 	$("#insertSubmit").click(function() {
 		var uri = "restservices/countries";
-		$.post(uri, $("#insertForm").serialize());
+		$.ajax(uri, {
+			type: "POST",
+			beforeSend: function (xhr) {
+				var token = window.sessionStorage.getItem("sessionToken");
+				xhr.setRequestHeader( 'Authorization', 'Bearer ' + token);
+			},
+			data: $("#insertForm").serialize(),
+			succes: function() {
+				loadCountries();
+				console.log("Country inserted!");
+			},
+			error: function() {
+				console.log("Could not insert country!");
+			}
+		});
 	});
 	
 	$("#searchButton").click(function() {
@@ -210,6 +241,20 @@
 		});
 	});
 	
+	$("#allCountries").click(function() {
+		loadCountries();
+	});
+	
+	$("#loginButton").click(function(event) {
+		var data = $("#loginForm").serialize();
+		$.post("restservices/authentication", data, function(response) {
+		window.sessionStorage.setItem("sessionToken", response);
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			console.log(textStatus);
+			console.log(errorThrown);
+		});
+	});
+
 	$(function() {
 		loadCountries();
 		$("#updateDiv").hide();

@@ -76,7 +76,7 @@ public class CountryDAO extends BaseDAO{
 	}
 
 	public List<Country> search(String searchValue) {
-		return selectCountries("SELECT * FROM country WHERE name LIKE('%"+searchValue+"%') OR name LIKE('%"+searchValue+"%')");
+		return selectCountries("SELECT * FROM country WHERE name LIKE('%"+searchValue+"%') OR code LIKE('%"+searchValue+"%')");
 	}
 	public Country update(Country country) {
 		try (Connection con = super.getConnection()) {
