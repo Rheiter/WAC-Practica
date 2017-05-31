@@ -8,9 +8,10 @@
 	<div id="frame">
 	
 		<div id="loginDiv">
+			<p id="welcome">Log in to update, delete or add countries.</p>
 			<form id="loginForm">
-				<input type="text" name="username" placeholder="Username">
-				<input type="text" name="password" placeholder="Password">
+				<input type="text" id="username" name="username" placeholder="Username">
+				<input type="password" name="password" placeholder="Password">
 				<input id="loginButton" type="button" value="Log in">
 			</form>
 		</div>
@@ -147,6 +148,7 @@
 				console.log("Country updated!");
 			},
 			error: function(response) {
+				alert("Log in to update countries!");
 				console.log("Could not update country!");
 			}
 		});
@@ -166,6 +168,7 @@
 				console.log("Country deleted!");
 			},
 			error: function(response) {
+				alert("Log in to delete countries!");
 				console.log("Could not delete country!");
 			}
 		});
@@ -185,6 +188,7 @@
 				console.log("Country inserted!");
 			},
 			error: function() {
+				alert("Log in to add countries!");
 				console.log("Could not insert country!");
 			}
 		});
@@ -249,9 +253,12 @@
 		var data = $("#loginForm").serialize();
 		$.post("restservices/authentication", data, function(response) {
 		window.sessionStorage.setItem("sessionToken", response);
+		$("#welcome").text("Welcome " + $("#username").val() + "!");
+		$("#loginForm").hide();
 		}).fail(function(jqXHR, textStatus, errorThrown) {
 			console.log(textStatus);
 			console.log(errorThrown);
+			alert("Wrong username/password!");
 		});
 	});
 
